@@ -5,36 +5,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+        with:
+          path: .
+          
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
           
-      - name: Setup Java
-        uses: actions/setup-java@v4
+      - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
           
       - name: Install and Build
         run: |
-          # Мы явно переходим в нужную папку
-          cd ${{ github.workspace }}/${{ github.event.repository.name }}
-          
-          # Устанавливаем зависимости
           npm install
-          
-          # Добавляем Android
           npx cap add android
-          
-          # Собираем APK
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug
           
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: APK-File
-          path: ${{ github.workspace }}/${{ github.event.repository.name }}/android/app/build/outputs/apk/debug/app-debug.apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
