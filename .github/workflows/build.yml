@@ -18,23 +18,23 @@ jobs:
       - name: Install and Build
         run: |
           npm install
-          
           mkdir -p www
           cp index.html www/
-          
-          # 1. Создаем Android-проект
           npx cap add android
           npx cap sync android
           
-          # 2. Генерируем иконки (теперь папка android уже существует)
-          npx @capacitor/assets generate --android
+          # Ищем ЛЮБУЮ картинку в папке resources (будь то jpg или png)
+          ICON_PATH=$(find resources -maxdepth 1 \( -name "*.jpg" -o -name "*.png" \) | head -n 1)
+          echo "Найдена иконка: $ICON_PATH"
           
-          # 3. Принудительно очищаем старые иконки в ресурсах (если остались)
-          rm -rf android/app/src/main/res/mipmap-*/ic_launcher.png
-          rm -rf android/app/src/main/res/mipmap-*/ic_launcher_round.png
-          cp -r resources/android/mipmap-* android/app/src/main/res/ 2>/dev/null || true
+          if [ -n "$ICON_PATH" ]; then
+            cp "$ICON_PATH" android/app/src/main/res/mipmap-mdpi/ic_launcher.png
+            cp "$ICON_PATH" android/app/src/main/res/mipmap-hdpi/ic_launcher.png
+            cp "$ICON_PATH" android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
+            cp "$ICON_PATH" android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
+            cp "$ICON_PATH" android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+          fi
           
-          # 4. Собираем APK
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug
