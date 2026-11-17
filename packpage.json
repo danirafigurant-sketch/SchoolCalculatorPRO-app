@@ -1,0 +1,11 @@
+{
+  "name": "calculator-pro",
+  "version": "1.0.0",
+  "description": "Школьный калькулятор PRO",
+  "main": "index.html",
+  "scripts": {
+    "build": "echo 'No build step required'"
+  },
+  "author": "",
+  "license": "ISC"
+}
