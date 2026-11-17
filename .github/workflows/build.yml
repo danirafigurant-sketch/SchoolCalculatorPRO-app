@@ -1,5 +1,5 @@
-name: APK
-on: push
+name: Build APK
+on: [push, workflow_dispatch]
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -8,13 +8,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm install
+      - name: Install Dependencies
+        working-directory: ./ 
+        run: npm install
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
-      - run: npx cap add android
-      - run: cd android && chmod +x gradlew && ./gradlew assembleDebug
+      - name: Add Android Platform
+        run: npx cap add android
+      - name: Build APK
+        run: cd android && chmod +x gradlew && ./gradlew assembleDebug
       - uses: actions/upload-artifact@v4
         with:
           name: APK-File
