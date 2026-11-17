@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Школьный калькулятор PRO</title>
+  <style>
+    :root {
+      --bg-main: #0c1322;
+      --card-bg: #141f32;
+      --input-bg: #0c1424;
+      --border-color: #23334d;
+      --text-main: #ffffff;
+      --text-muted: #8295b5;
+      --btn-active: #2b66c2;
+      --btn-inactive: #18253d;
+      --accent-green: #5eead4;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 440px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Шапка */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .header-icon {
+      background: var(--btn-active);
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+
+    .header-text h1 {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .header-text p {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Основная карточка */
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 18px;
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    /* Сетка разделов */
+    .category-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .cat-btn {
+      background: var(--btn-inactive);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .cat-btn.active {
+      background: var(--btn-active);
+      border-color: #4b89e8;
+      box-shadow: 0 0 10px rgba(43, 102, 194, 0.4);
+    }
+
+    /* Поля ввода */
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .input-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .input-field, select {
+      background: var(--input-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 16px;
+      outline: none;
+      width: 100%;
+      -webkit-appearance: none;
+    }
+
+    .input-field:focus {
+      border-color: var(--btn-active);
+    }
+
+    /* Кнопка вычисления */
+    .submit-btn {
+      background: var(--btn-active);
+      border: none;
+      color: #fff;
+      padding: 16px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 4px;
+      transition: background 0.2s;
+    }
+
+    .submit-btn:active {
+      background: #1e4e99;
+    }
+
+    /* Блок результата */
+    .result-box {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-top: 8px;
+    }
+
+    .result-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--accent-green);
+      word-break: break-all;
+    }
+
+    .result-sub {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    /* Столбик / деление уголком */
+    .step-display {
+      background: #090f1a;
+      border: 1px dashed var(--border-color);
+      border-radius: 10px;
+      padding: 14px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 15px;
+      line-height: 1.5;
+      white-space: pre;
+      overflow-x: auto;
+      color: #e2e8f0;
+      font-weight: 600;
+    }
+
+    /* История */
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .clear-btn {
+      background: var(--btn-inactive);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 220px;
+      overflow-y: auto;
+    }
+
+    .history-item {
+      font-size: 14px;
+      color: #cbd5e1;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #1a2842;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Шапка -->
+  <div class="header">
+    <div class="header-icon">🧮</div>
+    <div class="header-text">
+      <h1>Школьный калькулятор PRO</h1>
+      <p>Математика под рукой · работает офлайн</p>
+    </div>
+  </div>
+
+  <!-- Главная карточка -->
+  <div class="card">
+    <div class="section-title">Раздел</div>
+    <div class="category-grid">
+      <button class="cat-btn active" onclick="setMode('roots', this)">Корни</button>
+      <button class="cat-btn" onclick="setMode('mult-col', this)">× В столбик</button>
+      <button class="cat-btn" onclick="setMode('div-col', this)">÷ Уголком</button>
+      <button class="cat-btn" onclick="setMode('percent', this)">% Проценты</button>
+      <button class="cat-btn" onclick="setMode('power', this)">Степени</button>
+      <button class="cat-btn" onclick="setMode('basic', this)">Обычные</button>
+    </div>
+
+    <!-- Динамические поля ввода -->
+    <div id="dynamic-inputs"></div>
+
+    <button class="submit-btn" onclick="calculate()">Вычислить</button>
+
+    <!-- Результат -->
+    <div class="result-box">
+      <div class="section-title">Результат</div>
+      <div class="result-value" id="res-main">0</div>
+      <div class="result-sub" id="res-sub">Введите числа и нажмите вычислить</div>
+    </div>
+
+    <!-- Дополнительный контейнер для столбика/уголка -->
+    <div id="steps-container" style="display: none;">
+      <div class="section-title" style="margin-bottom: 6px;">Решение по шагам:</div>
+      <div class="step-display" id="steps-output"></div>
+    </div>
+  </div>
+
+  <!-- История -->
+  <div class="card">
+    <div class="history-header">
+      <h3 style="font-size: 15px;">История вычислений</h3>
+      <button class="clear-btn" onclick="clearHistory()">Очистить</button>
+    </div>
+    <div class="history-list" id="history-box"></div>
+  </div>
+</div>
+
+<script>
+  let currentMode = 'roots';
+  let historyData = [];
+
+  // Передача контекста кнопки (this) для правильной подсветки
+  function setMode(mode, btnElement) {
+    currentMode = mode;
+    document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+    btnElement.classList.add('active');
+    document.getElementById('steps-container').style.display = 'none';
+    renderInputs();
+  }
+
+  function renderInputs() {
+    const box = document.getElementById('dynamic-inputs');
+    box.innerHTML = '';
+
+    if (currentMode === 'roots') {
+      box.innerHTML = `
+        <div class="input-group">
+          <label class="input-label">Число под корнем</label>
+          <input type="number" id="inp1" class="input-field" value="17">
+        </div>
+        <div class="input-group">
+          <label class="input-label">Сколько раз извлечь корень</label>
+          <select id="inp2" class="input-field">
+            <option value="1">1 раз (√x)</option>
+            <option value="2">2 раза (∜x)</option>
+            <option value="3">3 раза</option>
+          </select>
+        </div>`;
+    } 
+    else if (currentMode === 'mult-col') {
+      box.innerHTML = `
+        <div class="input-group">
+          <label class="input-label">Первый множитель</label>
+          <input type="number" id="inp1" class="input-field" placeholder="Например, 254">
+        </div>
+        <div class="input-group">
+          <label class="input-label">Второй множитель</label>
+          <input type="number" id="inp2" class="input-field" placeholder="Например, 36">
+        </div>`;
+    } 
+    else if (currentMode === 'div-col') {
+      box.innerHTML = `
+        <div class="input-group">
+          <label class="input-label">Делимое</label>
+          <input type="number" id="inp1" class="input-field" placeholder="Например, 948">
+        </div>
+        <div class="input-group">
+          <label class="input-label">Делитель</label>
+          <input type="number" id="inp2" class="input-field" placeholder="Например, 4">
+        </div>`;
+    } 
+    else if (currentMode === 'percent') {
+      box.innerHTML = `
+        <div class="input-group">
+          <label class="input-label">Операция с процентами</label>
+          <select id="perc-type" class="input-field">
+            <option value="1">Найти X% от числа Y</option>
+            <option value="2">Прибавить X% к числу Y</option>
+            <option value="3">Вычесть X% из числа Y</option>
+            <option value="4">Сколько % составляет X от Y</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label class="input-label">Значение X (Процент / Часть)</label>
+          <input type="number" id="inp1" class="input-field" placeholder="Например, 15">
+        </div>
+        <div class="input-group">
+          <label class="input-label">Значение Y (Базовое число)</label>
+          <input type="number" id="inp2" class="input-field" placeholder="Например, 200">
+        </div>`;
+    } 
+    else if (currentMode === 'power') {
+      box.innerHTML = `
+        <div class="input-group">
+          <label class="input-label">Основание</label>
+          <input type="number" id="inp1" class="input-field" placeholder="2">
+        </div>
+        <div class="input-group">
+          <label class="input-label">Степень</label>
+          <input type="number" id="inp2" class="input-field" placeholder="8">
+        </div>`;
+    } 
+    else if (currentMode === 'basic') {
+      box.innerHTML = `
+        <div class="input-group">
+          <label class="input-label">Число А</label>
+          <input type="number" id="inp1" class="input-field" placeholder="10">
+        </div>
+        <div class="input-group">
+          <label class="input-label">Действие</label>
+          <select id="op-basic" class="input-field">
+            <option value="+">+</option>
+            <option value="-">-</option>
+            <option value="*">×</option>
+            <option value="/">÷</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label class="input-label">Число B</label>
+          <input type="number" id="inp2" class="input-field" placeholder="5">
+        </div>`;
+    }
+  }
+
+  function calculate() {
+    const val1 = parseFloat(document.getElementById('inp1')?.value);
+    const val2 = parseFloat(document.getElementById('inp2')?.value);
+    let result = 0;
+    let subtitle = '';
+    const stepsBox = document.getElementById('steps-container');
+    const stepsOutput = document.getElementById('steps-output');
+    stepsBox.style.display = 'none';
+
+    if (isNaN(val1) && currentMode !== 'basic') {
+      document.getElementById('res-main').innerText = "Ошибка";
+      document.getElementById('res-sub').innerText = "Введите корректные числа";
+      return;
+    }
+
+    if (currentMode === 'roots') {
+      const times = parseInt(document.getElementById('inp2').value);
+      result = val1;
+      for (let i = 0; i < times; i++) result = Math.sqrt(result);
+      subtitle = `√(${val1}) [${times} раз] = ${result}`;
+    }
+    else if (currentMode === 'power') {
+      result = Math.pow(val1, val2);
+      subtitle = `${val1} ^ ${val2} = ${result}`;
+    }
+    else if (currentMode === 'basic') {
+      const op = document.getElementById('op-basic').value;
+      if (op === '+') result = val1 + val2;
+      if (op === '-') result = val1 - val2;
+      if (op === '*') result = val1 * val2;
+      if (op === '/') result = val2 !== 0 ? val1 / val2 : 'Ошибка (на 0)';
+      subtitle = `${val1} ${op} ${val2} = ${result}`;
+    }
+    else if (currentMode === 'percent') {
+      const type = document.getElementById('perc-type').value;
+      if (type === '1') {
+        result = (val2 * val1) / 100;
+        subtitle = `${val1}% от ${val2} = ${result}`;
+      } else if (type === '2') {
+        result = val2 + (val2 * val1) / 100;
+        subtitle = `${val2} + ${val1}% = ${result}`;
+      } else if (type === '3') {
+        result = val2 - (val2 * val1) / 100;
+        subtitle = `${val2} - ${val1}% = ${result}`;
+      } else if (type === '4') {
+        result = ((val1 / val2) * 100).toFixed(2) + '%';
+        subtitle = `${val1} от ${val2} = ${result}`;
+      }
+    }
+    else if (currentMode === 'mult-col') {
+      const n1 = Math.abs(Math.round(val1));
+      const n2 = Math.abs(Math.round(val2));
+      result = n1 * n2;
+      subtitle = `${n1} × ${n2} = ${result}`;
+
+      stepsOutput.textContent = generateMultSteps(n1, n2, result);
+      stepsBox.style.display = 'block';
+    }
+    else if (currentMode === 'div-col') {
+      const n1 = Math.abs(Math.round(val1));
+      const n2 = Math.abs(Math.round(val2));
+      if (n2 === 0) {
+        document.getElementById('res-main').innerText = "Ошибка";
+        document.getElementById('res-sub').innerText = "Деление на ноль невозможно!";
+        return;
+      }
+      
+      // Вычисляем результат с дробной частью (до 4 знаков), если нужно
+      let exactRes = n1 / n2;
+      result = Number.isInteger(exactRes) ? exactRes : exactRes.toFixed(4);
+
+      stepsOutput.textContent = generateDivSteps(n1, n2);
+      stepsBox.style.display = 'block';
+      subtitle = `Результат деления: ${result}`;
+    }
+
+    document.getElementById('res-main').innerText = result;
+    document.getElementById('res-sub').innerText = subtitle;
+
+    addHistory(subtitle);
+  }
+
+  // Умножение в столбик (красивое выравнивание)
+  function generateMultSteps(a, b, res) {
+    let sA = a.toString();
+    let sB = b.toString();
+    let sRes = res.toString();
+    
+    // Ширина всего блока
+    let width = Math.max(sA.length, sB.length + 1, sRes.length) + 2;
+
+    let out = sA.padStart(width) + "\n";
+    out += "×" + sB.padStart(width - 1) + "\n";
+    out += "─".repeat(width) + "\n";
+
+    if (sB.length > 1) {
+      let digits = sB.split('').reverse();
+      let hasMultiple = false;
+      for (let i = 0; i < digits.length; i++) {
+        let digit = parseInt(digits[i]);
+        if (digit === 0) continue; // Пропускаем умножение на 0 для красоты
+        hasMultiple = true;
+        let sub = (a * digit).toString();
+        // Добавляем пробелы справа (сдвиг) и выравниваем
+        let paddedSub = (sub + " ".repeat(i)).padStart(width);
+        out += paddedSub + "\n";
+      }
+      if (hasMultiple) out += "─".repeat(width) + "\n";
+    }
+    out += sRes.padStart(width);
+    return out;
+  }
+
+  // Деление уголком (максимально приближено к школьной тетради)
+  function generateDivSteps(dividend, divisor) {
+    let sDiv = dividend.toString();
+    let out = "";
+    
+    // Шапка
+    out += `${sDiv} │ ${divisor}\n`;
+    
+    let quotient = "";
+    let current = 0;
+    let lines = []; // Будем хранить строки для вывода, чтобы потом нарисовать полосу
+
+    for (let i = 0; i < sDiv.length; i++) {
+      current = current * 10 + parseInt(sDiv[i]);
+      
+      if (current >= divisor || quotient.length > 0) {
+        let qDigit = Math.floor(current / divisor);
+        let toSubtract = qDigit * divisor;
+        let remainder = current - toSubtract;
+        
+        quotient += qDigit;
+        
+        // Форматируем строку для вычитания
+        // Отступ слева, чтобы подставить под правильные цифры
+        let spaces = i - (toSubtract.toString().length - 1);
+        if (spaces < 0) spaces = 0;
+        
+        let subtractStr = " ".repeat(spaces) + toSubtract;
+        let lineStr = "─".repeat(Math.max(subtractStr.length, spaces + remainder.toString().length)) + " ";
+        let remStr = " ".repeat(spaces) + remainder;
+        
+        lines.push({
+          sub: subtractStr,
+          line: lineStr,
+          rem: remStr
+        });
+        
+        current = remainder;
+      }
+    }
+
+    // Рисуем правую часть (палочку и частное)
+    let rightPart = "│" + "─".repeat(quotient.length + 1) + "\n";
+    
+    // Собираем левую часть
+    let leftLines = [];
+    let lastPos = 0;
+    lines.forEach((l, idx) => {
+       leftLines.push(l.sub);
+       if (idx < lines.length - 1) {
+           leftLines.push(l.line);
+           leftLines.push(l.rem);
+       }
+    });
+
+    // Склеиваем левую и правую части построчно
+    let maxLines = Math.max(1, leftLines.length);
+    let resultStr = "";
+    
+    // Первая строка (делимое и делитель)
+    resultStr += sDiv.padEnd(12) + rightPart;
+    
+    // Вторая строка (первое вычитание и черта)
+    if (leftLines.length > 0) {
+        resultStr += (leftLines[0] || "").padEnd(12) + "│" + quotient + "\n";
+    } else {
+        resultStr += "".padEnd(12) + "│" + quotient + "\n";
+    }
+    
+    // Третья строка (черта под первым вычитанием)
+    if (leftLines.length > 1) {
+        resultStr += (leftLines[1] || "").padEnd(12) + "\n";
+    } else {
+        resultStr += "─".repeat(sDiv.length).padEnd(12) + "\n";
+    }
+
+    // Остальные строки
+    for (let i = 2; i < leftLines.length; i++) {
+        resultStr += (leftLines[i] || "").padEnd(12) + "\n";
+    }
+
+    // Если есть остаток (не разделилось нацело)
+    if (current > 0) {
+        resultStr += `\nОстаток: ${current}`;
+    }
+
+    return resultStr;
+  }
+
+  function addHistory(text) {
+    historyData.unshift(text);
+    if (historyData.length > 10) historyData.pop();
+    renderHistory();
+  }
+
+  function renderHistory() {
+    const box = document.getElementById('history-box');
+    box.innerHTML = '';
+    historyData.forEach(item => {
+      const el = document.createElement('div');
+      el.className = 'history-item';
+      el.innerText = item;
+      box.appendChild(el);
+    });
+  }
+
+  function clearHistory() {
+    historyData = [];
+    renderHistory();
+  }
+
+  // Инициализация
+  renderInputs();
+  addHistory("√17 = 4.12310562562");
+  addHistory("1.7 × 10 = 17");
+</script>
+</body>
+        </html>
