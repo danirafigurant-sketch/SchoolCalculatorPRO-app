@@ -17,13 +17,21 @@ jobs:
           
       - name: Install and Build
         run: |
+          # Ищем папку, где лежит package.json и переходим в неё
+          FOUND_DIR=$(find . -name "package.json" -not -path "*/node_modules/*" -exec dirname {} \; | head -n 1)
+          echo "Работаем в папке: $FOUND_DIR"
+          cd "$FOUND_DIR"
+          
+          # Выполняем команды
           npm install
           npx cap add android
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug
           
-      - uses: actions/upload-artifact@v4
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
         with:
           name: APK-File
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          # Ищем собранный APK
+          path: "**/android/app/build/outputs/apk/debug/app-debug.apk"
