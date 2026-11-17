@@ -17,16 +17,22 @@ jobs:
           
       - name: Install and Build
         run: |
-          # 1. Устанавливаем зависимости
           npm install
           
-          # 2. Создаем папку www и копируем туда калькулятор
           mkdir -p www
           cp index.html www/
           
-          # 3. Добавляем Android и синхронизируем
+          # 1. Создаем Android-проект
           npx cap add android
           npx cap sync android
+          
+          # 2. Генерируем иконки (теперь папка android уже существует)
+          npx @capacitor/assets generate --android
+          
+          # 3. Принудительно очищаем старые иконки в ресурсах (если остались)
+          rm -rf android/app/src/main/res/mipmap-*/ic_launcher.png
+          rm -rf android/app/src/main/res/mipmap-*/ic_launcher_round.png
+          cp -r resources/android/mipmap-* android/app/src/main/res/ 2>/dev/null || true
           
           # 4. Собираем APK
           cd android
