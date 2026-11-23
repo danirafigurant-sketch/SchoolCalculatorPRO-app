@@ -19,7 +19,6 @@ jobs:
         run: |
           npm install
           
-          # Копируем картинку в корень для index.html
           ICON_FILE=$(find resources -type f \( -name "*.jpg" -o -name "*.png" \) | head -n 1)
           if [ -n "$ICON_FILE" ]; then
             cp "$ICON_FILE" icon.png
@@ -27,20 +26,25 @@ jobs:
           
           mkdir -p www
           cp index.html www/
-          cp icon.png www/
+          if [ -f icon.png ]; then cp icon.png www/; fi
           
           npx cap add android
           npx cap sync android
           
-          # --- ЗАМЕНА ИКОНКИ НА РАБОЧЕМ СТОЛЕ ---
+          # --- ЖЕСТКАЯ ЗАМЕНА ИКОНКИ ---
           if [ -n "$ICON_FILE" ]; then
+            # Удаляем стандартные XML-иконки (адаптивные), чтобы Android взял нашу картинку
+            rm -f android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
+            rm -f android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
+            
+            # Копируем картинку во все папки
             cp "$ICON_FILE" android/app/src/main/res/mipmap-mdpi/ic_launcher.png
             cp "$ICON_FILE" android/app/src/main/res/mipmap-hdpi/ic_launcher.png
             cp "$ICON_FILE" android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
             cp "$ICON_FILE" android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
             cp "$ICON_FILE" android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
           fi
-          # ---------------------------------------
+          # ------------------------------
           
           cd android
           chmod +x gradlew
