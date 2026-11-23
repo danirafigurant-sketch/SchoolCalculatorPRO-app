@@ -18,7 +18,7 @@ jobs:
       - name: Install and Build
         run: |
           npm install
-          npm install @capacitor/app-launcher
+          npm install @capacitor/app-launcher@latest-5
           
           mkdir -p www
           cp index.html www/
