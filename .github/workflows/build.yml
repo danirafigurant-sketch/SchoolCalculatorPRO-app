@@ -18,16 +18,21 @@ jobs:
       - name: Install and Build
         run: |
           npm install
-          npm install @capacitor/app-launcher@latest-5
+          
+          # Копируем картинку в корень для index.html
+          ICON_FILE=$(find resources -type f \( -name "*.jpg" -o -name "*.png" \) | head -n 1)
+          if [ -n "$ICON_FILE" ]; then
+            cp "$ICON_FILE" icon.png
+          fi
           
           mkdir -p www
           cp index.html www/
+          cp icon.png www/
           
           npx cap add android
           npx cap sync android
           
-          # --- ЗАМЕНА ИКОНКИ ---
-          ICON_FILE=$(find resources -type f \( -name "*.jpg" -o -name "*.png" \) | head -n 1)
+          # --- ЗАМЕНА ИКОНКИ НА РАБОЧЕМ СТОЛЕ ---
           if [ -n "$ICON_FILE" ]; then
             cp "$ICON_FILE" android/app/src/main/res/mipmap-mdpi/ic_launcher.png
             cp "$ICON_FILE" android/app/src/main/res/mipmap-hdpi/ic_launcher.png
@@ -35,7 +40,7 @@ jobs:
             cp "$ICON_FILE" android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
             cp "$ICON_FILE" android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
           fi
-          # ----------------------
+          # ---------------------------------------
           
           cd android
           chmod +x gradlew
