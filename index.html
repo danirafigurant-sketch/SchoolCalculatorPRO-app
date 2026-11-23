@@ -22,7 +22,6 @@
     .header { display: flex; align-items: center; gap: 12px; margin-top: 10px; justify-content: space-between; }
     .header-left { display: flex; align-items: center; gap: 12px; }
     
-    /* Стиль для картинки в шапке */
     .header-icon { width: 48px; height: 48px; border-radius: 12px; object-fit: cover; }
     
     .header-text h1 { font-size: 18px; font-weight: 700; }
@@ -58,7 +57,6 @@
     .history-list { display: flex; flex-direction: column; gap: 12px; max-height: 220px; overflow-y: auto; }
     .history-item { font-size: 14px; color: var(--text-muted); padding-bottom: 8px; border-bottom: 1px solid var(--border-color); }
     
-    /* Стиль для кнопки сканера */
     .scanner-btn { background: #8b5cf6; color: white; border: none; grid-column: span 2; margin-top: 10px; display: flex; justify-content: center; align-items: center; gap: 8px; }
     .scanner-btn:active { background: #7c3aed; }
   </style>
@@ -68,7 +66,7 @@
 <div class="container">
   <div class="header">
     <div class="header-left">
-      <!-- Картинка в шапке приложения -->
+      <!-- Картинка из папки resources, скопированная в корень при сборке -->
       <img src="icon.png" alt="Icon" class="header-icon">
       <div class="header-text">
         <h1>Калькулятор PRO</h1>
@@ -94,7 +92,6 @@
       <button class="cat-btn" onclick="setMode('stats', this)">Статистика</button>
       <button class="cat-btn" onclick="setMode('quad', this)">Квадр. уравнения</button>
       
-      <!-- Кнопка Сканера Photomath -->
       <button class="cat-btn scanner-btn" onclick="openPhotomath()">📷 Сканер (Photomath)</button>
     </div>
 
@@ -127,7 +124,6 @@
   let currentMode = 'roots';
   let historyData = JSON.parse(localStorage.getItem('calcHistory')) || [];
 
-  // Тема
   function toggleTheme() {
     document.body.classList.toggle('light-theme');
     const isLight = document.body.classList.contains('light-theme');
@@ -139,7 +135,6 @@
     document.querySelector('.theme-toggle').innerText = '☀️';
   }
 
-  // Функция открытия Photomath
   async function openPhotomath() {
     if (window.Capacitor && window.Capacitor.Plugins.AppLauncher) {
       try {
@@ -444,4 +439,4 @@
   renderHistory();
 </script>
 </body>
-</html>
+  </html>
