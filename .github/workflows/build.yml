@@ -18,47 +18,24 @@ jobs:
       - name: Install and Build
         run: |
           npm install
+          npm install @capacitor/app-launcher
+          
           mkdir -p www
           cp index.html www/
+          
           npx cap add android
           npx cap sync android
           
-          # --- ЖЕСТКАЯ ЗАМЕНА ИКОНКИ ---
-          echo "Ищем картинку..."
+          # --- ЗАМЕНА ИКОНКИ ---
           ICON_FILE=$(find resources -type f \( -name "*.jpg" -o -name "*.png" \) | head -n 1)
-          
-          if [ -z "$ICON_FILE" ]; then
-            echo "ОШИБКА: Картинка не найдена в папке resources!"
-            exit 1
+          if [ -n "$ICON_FILE" ]; then
+            cp "$ICON_FILE" android/app/src/main/res/mipmap-mdpi/ic_launcher.png
+            cp "$ICON_FILE" android/app/src/main/res/mipmap-hdpi/ic_launcher.png
+            cp "$ICON_FILE" android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
+            cp "$ICON_FILE" android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
+            cp "$ICON_FILE" android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
           fi
-          
-          echo "Найдена картинка: $ICON_FILE"
-          
-          mkdir -p android/app/src/main/res/mipmap-mdpi
-          mkdir -p android/app/src/main/res/mipmap-hdpi
-          mkdir -p android/app/src/main/res/mipmap-xhdpi
-          mkdir -p android/app/src/main/res/mipmap-xxhdpi
-          mkdir -p android/app/src/main/res/mipmap-xxxhdpi
-          
-          rm -f android/app/src/main/res/mipmap-*/ic_launcher.*
-          rm -f android/app/src/main/res/mipmap-*/ic_launcher_round.*
-          rm -f android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
-          rm -f android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
-          
-          cp "$ICON_FILE" android/app/src/main/res/mipmap-mdpi/ic_launcher.png
-          cp "$ICON_FILE" android/app/src/main/res/mipmap-hdpi/ic_launcher.png
-          cp "$ICON_FILE" android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
-          cp "$ICON_FILE" android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
-          cp "$ICON_FILE" android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
-          
-          cp "$ICON_FILE" android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png
-          cp "$ICON_FILE" android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png
-          cp "$ICON_FILE" android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png
-          cp "$ICON_FILE" android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
-          cp "$ICON_FILE" android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
-          
-          echo "Иконки успешно заменены!"
-          # -----------------------------
+          # ----------------------
           
           cd android
           chmod +x gradlew
